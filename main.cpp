@@ -127,7 +127,6 @@ int main(){
     );
 
     //ESCADA DA BASE
-
     figuras.push_back(
         new CutBox(
             3,7,
@@ -153,7 +152,6 @@ int main(){
     );
 
     //PARTE AMARELA
-
     figuras.push_back(new PutVoxel(5,17,3,1,1,0,1));
     figuras.push_back(new PutVoxel(5,17,2,1,1,0,1));
     figuras.push_back(new PutVoxel(5,17,1,1,1,0,1));
@@ -179,7 +177,6 @@ int main(){
     figuras.push_back(new PutVoxel(7,17,4,1,1,0,1));
 
     //DESENHO
-
     for(auto fig : figuras){
         fig->draw(s);
     }
@@ -187,7 +184,6 @@ int main(){
     s.writeOFF("desenho.off");
 
     //LIBERAR MEMÓRIA
-
     for(auto fig : figuras){
         delete fig;
     }
