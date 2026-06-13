@@ -1,192 +1,163 @@
 //      g++ *.cpp -o escultor.exe      .\escultor.exe
 
+#include <iostream>
+#include <fstream>
 #include <vector>
+#include <string>
 
 #include "Sculptor.h"
 #include "FiguraGeometrica.h"
-
 #include "PutVoxel.h"
 #include "CutVoxel.h"
-
 #include "PutBox.h"
 #include "CutBox.h"
-
 #include "PutSphere.h"
 #include "CutSphere.h"
-
 #include "PutEllipsoid.h"
 #include "CutEllipsoid.h"
 
-int main(){
+int main() {
 
-    Sculptor s(23,23,10);
+    std::ifstream fin("desenho.txt");
+
+    if(!fin.is_open()){
+        std::cout << "Erro ao abrir o desenho." << std::endl;
+        return 1;
+    }
 
     std::vector<FiguraGeometrica*> figuras;
 
-    //BASE
-    figuras.push_back(
-        new PutBox(
-            3,16,
-            0,7,
-            1,10,
-            0.43,0.31,0.22,1.0
-        )
-    );
+    std::string comando;
+    Sculptor *s = nullptr;
 
-    //SUPORTE 1
-    figuras.push_back(
-        new PutEllipsoid(
-            5,7,3,
-            3,10,3,
-            0.43,0.31,0.22,1.0
-        )
-    );
+    while(fin >> comando){
 
-    figuras.push_back(
-        new CutEllipsoid(
-            5,20,3,
-            3,10,3
-        )
-    );
+        if(comando == "dim"){
+            int nx, ny, nz;
 
-    //SUPORTE 2
-    figuras.push_back(
-        new PutEllipsoid(
-            14,7,3,
-            3,10,3,
-            0.43,0.31,0.22,1.0
-        )
-    );
+            fin >> nx >> ny >> nz;
 
-    figuras.push_back(
-        new CutEllipsoid(
-            14,20,3,
-            3,10,3
-        )
-    );
+            s = new Sculptor(nx, ny, nz);
+        }
 
-    //MAÇÃ 1
-    figuras.push_back(
-        new PutSphere(
-            14,16,3,
-            3,
-            1,0,0,1
-        )
-    );
+        else if(comando == "putvoxel"){
+            int x, y, z;
+            float r, g, b, a;
 
-    figuras.push_back(
-        new PutVoxel(
-            14,19,3,
-            0,1,0,1
-        )
-    );
+            fin >> x >> y >> z
+                >> r >> g >> b >> a;
 
-    figuras.push_back(
-        new PutVoxel(
-            14,20,3,
-            0,1,0,1
-        )
-    );
+            figuras.push_back(
+                new PutVoxel(x,y,z,r,g,b,a)
+            );
+        }
 
-    figuras.push_back(
-        new PutVoxel(
-            15,20,3,
-            0,1,0,1
-        )
-    );
+        else if(comando == "cutvoxel"){
+            int x, y, z;
 
-    //MAÇÃ 2
-    figuras.push_back(
-        new PutSphere(
-            5,16,3,
-            3,
-            1,0,0,1
-        )
-    );
+            fin >> x >> y >> z;
 
-    figuras.push_back(
-        new CutSphere(
-            5,19,3,
-            3
-        )
-    );
+            figuras.push_back(
+                new CutVoxel(x,y,z)
+            );
+        }
 
-    figuras.push_back(
-        new PutVoxel(
-            5,17,3,
-            1,1,0,1
-        )
-    );
+        else if(comando == "putbox"){
+            int x0,x1,y0,y1,z0,z1;
+            float r,g,b,a;
 
-    figuras.push_back(
-        new CutVoxel(2,7,3)
-    );
+            fin >> x0 >> x1
+                >> y0 >> y1
+                >> z0 >> z1
+                >> r >> g >> b >> a;
 
-    figuras.push_back(
-        new CutVoxel(17,7,3)
-    );
+            figuras.push_back(
+                new PutBox(x0,x1,y0,y1,z0,z1,r,g,b,a)
+            );
+        }
 
-    //ESCADA DA BASE
-    figuras.push_back(
-        new CutBox(
-            3,7,
-            3,7,
-            6,10
-        )
-    );
+        else if(comando == "cutbox"){
+            int x0,x1,y0,y1,z0,z1;
 
-    figuras.push_back(
-        new CutBox(
-            7,11,
-            5,7,
-            6,10
-        )
-    );
+            fin >> x0 >> x1
+                >> y0 >> y1
+                >> z0 >> z1;
 
-    figuras.push_back(
-        new CutBox(
-            11,15,
-            7,7,
-            6,10
-        )
-    );
+            figuras.push_back(
+                new CutBox(x0,x1,y0,y1,z0,z1)
+            );
+        }
 
-    //PARTE AMARELA
-    figuras.push_back(new PutVoxel(5,17,3,1,1,0,1));
-    figuras.push_back(new PutVoxel(5,17,2,1,1,0,1));
-    figuras.push_back(new PutVoxel(5,17,1,1,1,0,1));
-    figuras.push_back(new PutVoxel(5,17,0,1,1,0,1));
-    figuras.push_back(new PutVoxel(5,17,4,1,1,0,1));
-    figuras.push_back(new PutVoxel(5,17,5,1,1,0,1));
-    figuras.push_back(new PutVoxel(5,17,6,1,1,0,1));
+        else if(comando == "putsphere"){
+            int x0,y0,z0,raio;
+            float r,g,b,a;
 
-    figuras.push_back(new PutVoxel(4,17,3,1,1,0,1));
-    figuras.push_back(new PutVoxel(3,17,3,1,1,0,1));
-    figuras.push_back(new PutVoxel(2,17,3,1,1,0,1));
+            fin >> x0 >> y0 >> z0
+                >> raio
+                >> r >> g >> b >> a;
 
-    figuras.push_back(new PutVoxel(6,17,3,1,1,0,1));
-    figuras.push_back(new PutVoxel(7,17,3,1,1,0,1));
-    figuras.push_back(new PutVoxel(8,17,3,1,1,0,1));
+            figuras.push_back(
+                new PutSphere(x0,y0,z0,raio,r,g,b,a)
+            );
+        }
 
-    figuras.push_back(new PutVoxel(4,17,2,1,1,0,1));
-    figuras.push_back(new PutVoxel(3,17,2,1,1,0,1));
-    figuras.push_back(new PutVoxel(4,17,1,1,1,0,1));
+        else if(comando == "cutsphere"){
+            int x0,y0,z0,raio;
 
-    figuras.push_back(new PutVoxel(6,17,5,1,1,0,1));
-    figuras.push_back(new PutVoxel(6,17,4,1,1,0,1));
-    figuras.push_back(new PutVoxel(7,17,4,1,1,0,1));
+            fin >> x0 >> y0 >> z0 >> raio;
 
-    //DESENHO
-    for(auto fig : figuras){
-        fig->draw(s);
+            figuras.push_back(
+                new CutSphere(x0,y0,z0,raio)
+            );
+        }
+
+        else if(comando == "putellipsoid"){
+            int x0,y0,z0,rx,ry,rz;
+            float r,g,b,a;
+
+            fin >> x0 >> y0 >> z0
+                >> rx >> ry >> rz
+                >> r >> g >> b >> a;
+
+            figuras.push_back(
+                new PutEllipsoid(x0,y0,z0,rx,ry,rz,r,g,b,a)
+            );
+        }
+
+        else if(comando == "cutellipsoid"){
+            int x0,y0,z0,rx,ry,rz;
+
+            fin >> x0 >> y0 >> z0
+                >> rx >> ry >> rz;
+
+            figuras.push_back(
+                new CutEllipsoid(x0,y0,z0,rx,ry,rz)
+            );
+        }
     }
 
-    s.writeOFF("desenho.off");
+    fin.close();
 
-    //LIBERAR MEMÓRIA
+    if(s == nullptr){
+        std::cout << "Dimensões não definidas!" << std::endl;
+        return 1;
+    }
+
+    //DESENHA
+    for(auto fig : figuras){
+        fig->draw(*s);
+    }
+
+    s->writeOFF("desenho.off");
+
+    //LIBERA MEMORIA
     for(auto fig : figuras){
         delete fig;
     }
+
+    delete s;
+
+    std::cout << "Desenho gerado." << std::endl;
 
     return 0;
 }
